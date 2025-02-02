@@ -1,0 +1,11 @@
+Add a folder to temporarily store files
+
+That's where the input from the website will go
+
+One file maximum at a time
+
+From there the Python program will access it
+
+After processing it, it will output it as a download
+
+(Also I should add an option to add reverb)
