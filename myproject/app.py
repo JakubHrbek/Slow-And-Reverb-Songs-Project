@@ -1,50 +1,80 @@
+from flask import Flask, render_template, request, redirect, send_from_directory
+from pydub import AudioSegment
 import os
-from flask import Flask, request, render_template
-import shutil
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = 'FileProcessing'
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# Folder where the processed files will be stored
+OUTPUT_FOLDER = 'FileProcessing'
+if not os.path.exists(OUTPUT_FOLDER):
+    os.makedirs(OUTPUT_FOLDER)
+
+# Allowed file extensions
+ALLOWED_EXTENSIONS = {'mp3', 'mp4', 'wav', 'flac'}
 
 
-def clear_folder(folder_path):
-    """Remove all contents of the folder before processing."""
-    if os.path.exists(folder_path):
-        shutil.rmtree(folder_path)  # Delete the entire folder
-    os.makedirs(folder_path, exist_ok=True)  # Recreate the folder
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-@app.route("/", methods=["GET", "POST"])
+def pitch_shift(audio, semitones):
+    # Adjust sample rate to shift pitch
+    new_sample_rate = int(audio.frame_rate * (2.0 ** (semitones / 12.0)))
+    return audio._spawn(audio.raw_data, overrides={'frame_rate': new_sample_rate}).set_frame_rate(audio.frame_rate)
+
+
+def remove_previous_files():
+    for filename in os.listdir(OUTPUT_FOLDER):
+        file_path = os.path.join(OUTPUT_FOLDER, filename)
+        if os.path.isfile(file_path):
+            os.remove(file_path)
+
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+
+@app.route('/upload', methods=['POST'])
 def upload_file():
-    if request.method == "POST":
-        if 'file' not in request.files:
-            return "No file uploaded"
+    if 'file' not in request.files:
+        return redirect(request.url)
 
-        file = request.files['file']
-        if file.filename == '':
-            return "No selected file"
+    file = request.files['file']
 
-        if file:
-            # Clear the folder before processing the file
-            clear_folder(app.config['UPLOAD_FOLDER'])
+    if file.filename == '':
+        return redirect(request.url)
 
-            # Set the fixed filename
-            new_filename = "file_processing.mp3"
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], new_filename)
+    if file and allowed_file(file.filename):
+        # Remove old files from the directory
+        remove_previous_files()
 
-            # Save the uploaded file with the new name
-            file.save(filepath)
+        filename = file.filename
+        file_path = os.path.join(OUTPUT_FOLDER, filename)
+        file.save(file_path)
 
-            functionality()
+        try:
+            audio = AudioSegment.from_file(file_path)
+        except Exception as e:
+            return f"Error processing the file: {e}"
 
-            return f"File uploaded and renamed to: {new_filename}"
+        sped_up_audio = audio.speedup(playback_speed=1.1)
+        slowed_audio = pitch_shift(audio, -1)
+        overslowed_audio = pitch_shift(audio, -3)
+
+        sped_up_audio.export(os.path.join(OUTPUT_FOLDER, "sped_up.mp3"), format="mp3")
+        slowed_audio.export(os.path.join(OUTPUT_FOLDER, "slowed_down.mp3"), format="mp3")
+        overslowed_audio.export(os.path.join(OUTPUT_FOLDER, "overslowed.mp3"), format="mp3")
+
+        return render_template('index.html', message="Audio processing complete!", processed_files=True)
+
+    return "Invalid file format. Only mp3, mp4, wav, and flac are allowed."
 
 
+@app.route('/download/<filename>')
+def download(filename):
+    return send_from_directory(OUTPUT_FOLDER, filename)
 
-    return render_template("index.html")
 
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)

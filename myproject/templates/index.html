@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Processing App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        button, input[type="file"] {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .results {
+            margin-top: 20px;
+        }
+        .results a {
+            display: block;
+            margin: 10px;
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        .results a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Audio Processing Application</h1>
+
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" required>
+        <button type="submit">Upload and Process</button>
+    </form>
+
+    {% if message %}
+    <div class="results">
+        <h3>{{ message }}</h3>
+        <a href="/download/sped_up.mp3" download>Download Sped Up Audio</a>
+        <a href="/download/slowed_down.mp3" download>Download Slowed Down Audio</a>
+        <a href="/download/overslowed.mp3" download>Download Overslowed Audio</a>
+    </div>
+    {% endif %}
+</body>
+</html>

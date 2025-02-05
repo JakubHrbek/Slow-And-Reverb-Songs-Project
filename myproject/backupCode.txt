@@ -10,13 +10,15 @@ def pitch_shift(audio, semitones):
 # Slowed
 # Overslowed
 
-def functionality():
-    audio = AudioSegment.from_file("FileProcessing/processing_file.mp3")
+try:
+    audio = AudioSegment.from_file("FileProcessing/file_processing_sped_up.mp3", "mp3")
+except:
+    audio = AudioSegment.from_file("FileProcessing/file_processing_sped_up.mp3", format="mp4")
 
-    sped_up_audio = audio.speedup(playback_speed=1.1)
-    slowed_audio = pitch_shift(audio, -1)
-    overslowed_audio = pitch_shift(audio, -3)
+sped_up_audio = audio.speedup(playback_speed=1.1)
+slowed_audio = pitch_shift(audio, -1)
+overslowed_audio = pitch_shift(audio, -3)
 
-    sped_up_audio.export("FileProcessing/file_processing_sped_up.mp3", format="mp3")
-    slowed_audio.export("FileProcessing/file_processing_slowed_down.mp3", format="mp3")
-    overslowed_audio.export("FileProcessing/file_processing_overslowed.mp3", format="mp3")
+sped_up_audio.export("FileProcessing/file_processing_sped_up.mp3", format="mp3")
+slowed_audio.export("FileProcessing/file_processing_slowed_down.mp3", format="mp3")
+overslowed_audio.export("FileProcessing/file_processing_overslowed.mp3", format="mp3")
