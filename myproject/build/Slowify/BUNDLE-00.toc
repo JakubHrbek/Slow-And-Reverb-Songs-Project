@@ -1,0 +1,3 @@
+([('Slowify',
+   '/Users/jakubhrbek/Desktop/GitHub-Project/Slow-And-Reverb-Songs-Project/myproject/dist/Slowify',
+   'EXECUTABLE')],)

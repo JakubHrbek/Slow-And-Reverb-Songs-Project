@@ -3,39 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio Processing App</title>
+    <title>Slowify</title>
     <style>
+        /* Base Styles */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
             text-align: center;
             padding: 20px;
+            transition: background 0.3s, color 0.3s;
         }
-        button, input[type="file"] {
-            padding: 10px 20px;
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            width: 50%;
+        }
+
+        .glassmorphicContainer {
+            display: flex;
+            justify-content: center;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 20px;
+        }
+
+        input[type="file"] {
+            display: block;
+            margin: 10px auto;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            color: white;
+            text-align: center;
+        }
+
+        button {
+            background: #6a0dad; /* Dark purple color */
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            color: white;
             font-size: 16px;
             cursor: pointer;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease-in-out;
         }
+
+        button:hover {
+            background: #9b4dca; /* Lighter purple on hover */
+            transform: translateY(-2px);
+        }
+
         .results {
             margin-top: 20px;
         }
+
         .results a {
             display: block;
-            margin: 10px;
-            color: #4CAF50;
+            margin: 10px 0;
+            color: white;
             text-decoration: none;
+            font-weight: bold;
         }
+
         .results a:hover {
             text-decoration: underline;
         }
-    </style>
-</head>
-<body>
-    <h1>Audio Processing Application</h1>
 
-    <form action="/upload" method="post" enctype="multipart/form-data">
-        <input type="file" name="file" required>
-        <button type="submit">Upload and Process</button>
-    </form>
+        #loading {
+            display: none;
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.2);
+            border-top: 5px solid #ff7eb3;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background: #0F0F0F;
+            color: white;
+        }
+
+        .dark-mode .container {
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .dark-mode button {
+            background: #6a0dad;
+        }
+
+        .dark-mode button:hover {
+            background: #9b4dca;
+        }
+
+        /* Light Mode Styles */
+        body.light-mode {
+            background: #ffffff;
+            color: #333333;
+        }
+
+        .light-mode .container {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .light-mode .results a {
+            color: black;
+        }
+
+        .light-mode input[type="file"] {
+            color: black;
+        }
+
+        .light-mode button {
+            background: #008CBA; /* Light blue color */
+        }
+
+        .light-mode button:hover {
+            background: #00b3e6;
+        }
+    </style>
+    <script>
+        // Toggle function for dark/light mode
+        function toggleMode() {
+            var body = document.body;
+            if (body.classList.contains('dark-mode')) {
+                body.classList.remove('dark-mode');
+                body.classList.add('light-mode');
+            } else {
+                body.classList.remove('light-mode');
+                body.classList.add('dark-mode');
+            }
+        }
+
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+        }
+    </script>
+</head>
+<body class="dark-mode"> <!-- Start with dark mode -->
+    <h1>Slowify</h1>
+
+    <div class="glassmorphicContainer">
+        <div class="container">
+            <form action="/upload" method="post" enctype="multipart/form-data" onsubmit="showLoading()">
+                <input type="file" name="file" required>
+                <button type="submit">Upload and Process</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dark Mode / Light Mode Toggle Button -->
+    <button onclick="toggleMode()" style="margin-top: 20px; background: #333; color: white;">Toggle Dark/Light Mode</button>
+
+    <!-- Loading Spinner -->
+    <div id="loading"></div>
 
     {% if message %}
     <div class="results">

@@ -60,7 +60,7 @@ def upload_file():
 
         sped_up_audio = audio.speedup(playback_speed=1.1)
         slowed_audio = pitch_shift(audio, -1)
-        overslowed_audio = pitch_shift(audio, -3)
+        overslowed_audio = pitch_shift(audio, -4)
 
         sped_up_audio.export(os.path.join(OUTPUT_FOLDER, "sped_up.mp3"), format="mp3")
         slowed_audio.export(os.path.join(OUTPUT_FOLDER, "slowed_down.mp3"), format="mp3")
