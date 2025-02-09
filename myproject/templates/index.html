@@ -163,7 +163,7 @@
         <div class="container">
             <form action="/upload" method="post" enctype="multipart/form-data" onsubmit="showLoading()">
                 <input type="file" name="file" required>
-                <button type="submit">Upload and Process</button>
+                <button type="submit">Process</button>
             </form>
         </div>
     </div>
@@ -177,10 +177,52 @@
     {% if message %}
     <div class="results">
         <h3>{{ message }}</h3>
-        <a href="/download/sped_up.mp3" download>Download Sped Up Audio</a>
-        <a href="/download/slowed_down.mp3" download>Download Slowed Down Audio</a>
-        <a href="/download/overslowed.mp3" download>Download Overslowed Audio</a>
+        <h1>Download files:</h1>
+
+        <!-- Download links -->
+        <a href="{{ url_for('download', filename=sped_up_file) }}" download>Download {{ sped_up_file }}</a>
+        <a href="{{ url_for('download', filename=slowed_down_file) }}" download>Download {{ slowed_down_file }}</a>
+        <a href="{{ url_for('download', filename=overslowed_file) }}" download>Download {{ overslowed_file }}</a>
+
+        <!-- Audio Preview Players -->
+        <h4>Preview:</h4>
+        <p><strong>Sped Up Audio:</strong></p>
+        <audio controls>
+            <source src="{{ url_for('download', filename=sped_up_file) }}" type="audio/mp3">
+            Your browser does not support the audio element.
+        </audio>
+
+        <p><strong>Slowed Down Audio:</strong></p>
+        <audio controls>
+            <source src="{{ url_for('download', filename=slowed_down_file) }}" type="audio/mp3">
+            Your browser does not support the audio element.
+        </audio>
+
+        <p><strong>Overslowed Audio:</strong></p>
+        <audio controls>
+            <source src="{{ url_for('download', filename=overslowed_file) }}" type="audio/mp3">
+            Your browser does not support the audio element.
+        </audio>
+
     </div>
     {% endif %}
+
+<script>
+    // Get all the audio elements
+    const audioElements = document.querySelectorAll('audio');
+
+    // Add event listeners to each audio element
+    audioElements.forEach(audio => {
+        audio.addEventListener('play', function() {
+            // Pause all other audio elements when one starts playing
+            audioElements.forEach(otherAudio => {
+                if (otherAudio !== audio) {
+                    otherAudio.pause();
+                    otherAudio.currentTime = 0; // Reset to start
+                }
+            });
+        });
+    });
+</script>
 </body>
 </html>

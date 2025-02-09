@@ -13,7 +13,7 @@ os.chdir(app_directory)
 subprocess.Popen(["flask", "run"])
 
 # Wait a few seconds for Flask to start
-time.sleep(3)  # You can adjust the sleep time depending on how long Flask takes to start
+time.sleep(1)  # You can adjust the sleep time depending on how long Flask takes to start
 
 # Open the web browser at the Flask app's URL
 webbrowser.open("http://127.0.0.1:5000")
